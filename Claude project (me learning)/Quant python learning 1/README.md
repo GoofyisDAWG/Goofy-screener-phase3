@@ -186,5 +186,11 @@ This project is for educational and research purposes only. All backtested resul
 
 ---
 
+## Sample Output
+
+![Phase 4 Excel Output](phase4_sample_output.png)
+
+Each weekly run produces a colour-coded multi-tab Excel report ranking ~120 stocks across US/ASX/JPX with regime context.
+
 *Built by Hiroki Kunu — International Finance, University of Queensland*  
 *GitHub: [GoofyisDAWG](https://github.com/GoofyisDAWG) | LinkedIn: [Hiroki Kunu](https://www.linkedin.com/in/hiroki-kunu-ba4218401)*
