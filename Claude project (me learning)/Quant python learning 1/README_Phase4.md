@@ -119,7 +119,7 @@ Phase 3 screener: downloads ~120 stocks across US/ASX/JPX, runs 5 strategies (MA
 - [x] Phase 3: Multi-market screener (US + ASX + JPX, 120 assets, S/A/B tiering)
 - [x] Phase 4a: Rule-based regime detector
 - [x] Phase 4b: Empirical gate search (120-backtest grid, asset-specific results)
-- [ ] Phase 5: Position sizing — Kelly Criterion / volatility scaling
+- [x] Phase 5: Position sizing — Kelly Criterion / volatility scaling
 - [ ] Phase 6: Portfolio construction with correlation analysis
 - [ ] Phase 7: ML features with XGBoost
 - [ ] Phase 8: Paper trading framework
