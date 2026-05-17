@@ -1,7 +1,7 @@
 {
   "metadata": {
     "created": "2026-05-12",
-    "total_logged": 16
+    "total_logged": 24
   },
   "open": [
     {
@@ -16,7 +16,10 @@
       "strategy": "MACD",
       "tier": "A",
       "score": 61,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 300.23,
+      "unrealised_pnl_pct": 2.716,
+      "days_held": 3
     },
     {
       "asset": "TSLA",
@@ -30,7 +33,10 @@
       "strategy": "MACD",
       "tier": "B",
       "score": 68,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 422.24,
+      "unrealised_pnl_pct": 1.124,
+      "days_held": 3
     },
     {
       "asset": "PEP",
@@ -44,7 +50,10 @@
       "strategy": "MACD",
       "tier": "B",
       "score": 40,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 149.12,
+      "unrealised_pnl_pct": -1.808,
+      "days_held": 3
     },
     {
       "asset": "CAT",
@@ -58,7 +67,10 @@
       "strategy": "MACD",
       "tier": "A",
       "score": 68,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 888.31,
+      "unrealised_pnl_pct": -1.005,
+      "days_held": 3
     },
     {
       "asset": "RTX",
@@ -72,7 +84,10 @@
       "strategy": "MACD",
       "tier": "B",
       "score": 31,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 171.18,
+      "unrealised_pnl_pct": -3.883,
+      "days_held": 3
     },
     {
       "asset": "IWM",
@@ -86,21 +101,10 @@
       "strategy": "MACD",
       "tier": "B",
       "score": 32,
-      "p7_verdict": "TRADE"
-    },
-    {
-      "asset": "CBA.AX",
-      "market": "ASX",
-      "entry_date": "2026-05-12",
-      "entry_price": 174.01,
-      "hold_days_target": 20,
-      "size_pct": 6.8,
-      "ml_score": 80.0,
-      "val_auc": 0.422,
-      "strategy": "RSI",
-      "tier": "S",
-      "score": 68,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 277.6,
+      "unrealised_pnl_pct": -2.991,
+      "days_held": 3
     },
     {
       "asset": "ANZ.AX",
@@ -114,7 +118,10 @@
       "strategy": "MACD",
       "tier": "A",
       "score": 55,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 35.21,
+      "unrealised_pnl_pct": -1.922,
+      "days_held": 3
     },
     {
       "asset": "FMG.AX",
@@ -128,7 +135,10 @@
       "strategy": "MA Crossover",
       "tier": "B",
       "score": 28,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 22.6,
+      "unrealised_pnl_pct": 5.509,
+      "days_held": 3
     },
     {
       "asset": "WDS.AX",
@@ -142,7 +152,10 @@
       "strategy": "MACD",
       "tier": "B",
       "score": 59,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 31.25,
+      "unrealised_pnl_pct": 2.425,
+      "days_held": 3
     },
     {
       "asset": "STW.AX",
@@ -156,7 +169,10 @@
       "strategy": "RSI",
       "tier": "S",
       "score": 57,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 77.7,
+      "unrealised_pnl_pct": -0.855,
+      "days_held": 3
     },
     {
       "asset": "7267.T",
@@ -170,7 +186,10 @@
       "strategy": "RSI",
       "tier": "B",
       "score": 24,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 1430.0,
+      "unrealised_pnl_pct": 14.309,
+      "days_held": 3
     },
     {
       "asset": "6758.T",
@@ -184,7 +203,10 @@
       "strategy": "Bollinger Bands",
       "tier": "B",
       "score": 44,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 3576.0,
+      "unrealised_pnl_pct": 6.05,
+      "days_held": 3
     },
     {
       "asset": "6723.T",
@@ -198,7 +220,10 @@
       "strategy": "MA Crossover",
       "tier": "B",
       "score": 31,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 3647.0,
+      "unrealised_pnl_pct": 4.2,
+      "days_held": 3
     },
     {
       "asset": "8001.T",
@@ -212,7 +237,10 @@
       "strategy": "MACD",
       "tier": "A",
       "score": 52,
-      "p7_verdict": "TRADE"
+      "p7_verdict": "TRADE",
+      "current_price": 2059.0,
+      "unrealised_pnl_pct": 3.833,
+      "days_held": 3
     },
     {
       "asset": "1321.T",
@@ -226,8 +254,144 @@
       "strategy": "MA Crossover",
       "tier": "B",
       "score": 29,
+      "p7_verdict": "TRADE",
+      "current_price": 64280.0,
+      "unrealised_pnl_pct": -1.667,
+      "days_held": 3
+    },
+    {
+      "asset": "AMZN",
+      "market": "US",
+      "entry_date": "2026-05-17",
+      "entry_price": 264.14,
+      "hold_days_target": 20,
+      "size_pct": 0.6,
+      "ml_score": 78.7,
+      "val_auc": 0.534,
+      "strategy": "MA Crossover",
+      "tier": "B",
+      "score": 41,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "BAC",
+      "market": "US",
+      "entry_date": "2026-05-17",
+      "entry_price": 49.77,
+      "hold_days_target": 20,
+      "size_pct": 1.1,
+      "ml_score": 58.7,
+      "val_auc": 0.562,
+      "strategy": "MACD",
+      "tier": "B",
+      "score": 65,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "ABBV",
+      "market": "US",
+      "entry_date": "2026-05-17",
+      "entry_price": 210.39,
+      "hold_days_target": 20,
+      "size_pct": 6.3,
+      "ml_score": 81.7,
+      "val_auc": 0.509,
+      "strategy": "RSI",
+      "tier": "S",
+      "score": 67,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "SPY",
+      "market": "US",
+      "entry_date": "2026-05-17",
+      "entry_price": 739.17,
+      "hold_days_target": 20,
+      "size_pct": 2.4,
+      "ml_score": 58.0,
+      "val_auc": 0.422,
+      "strategy": "MACD",
+      "tier": "A",
+      "score": 46,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "QQQ",
+      "market": "US",
+      "entry_date": "2026-05-17",
+      "entry_price": 708.93,
+      "hold_days_target": 20,
+      "size_pct": 0.5,
+      "ml_score": 61.1,
+      "val_auc": 0.48,
+      "strategy": "MACD",
+      "tier": "A",
+      "score": 43,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "CBA.AX",
+      "market": "ASX",
+      "entry_date": "2026-05-17",
+      "entry_price": 159.4,
+      "hold_days_target": 20,
+      "size_pct": 4.9,
+      "ml_score": 56.6,
+      "val_auc": 0.423,
+      "strategy": "RSI",
+      "tier": "S",
+      "score": 72,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "7011.T",
+      "market": "JPX",
+      "entry_date": "2026-05-17",
+      "entry_price": 4080.0,
+      "hold_days_target": 20,
+      "size_pct": 1.7,
+      "ml_score": 69.6,
+      "val_auc": 0.567,
+      "strategy": "MACD",
+      "tier": "A",
+      "score": 67,
+      "p7_verdict": "TRADE"
+    },
+    {
+      "asset": "8002.T",
+      "market": "JPX",
+      "entry_date": "2026-05-17",
+      "entry_price": 5856.0,
+      "hold_days_target": 20,
+      "size_pct": 0.7,
+      "ml_score": 64.2,
+      "val_auc": 0.481,
+      "strategy": "MA Crossover",
+      "tier": "B",
+      "score": 71,
       "p7_verdict": "TRADE"
     }
   ],
-  "closed": []
+  "closed": [
+    {
+      "asset": "CBA.AX",
+      "market": "ASX",
+      "entry_date": "2026-05-12",
+      "entry_price": 174.01,
+      "hold_days_target": 20,
+      "size_pct": 6.8,
+      "ml_score": 80.0,
+      "val_auc": 0.422,
+      "strategy": "RSI",
+      "tier": "S",
+      "score": 68,
+      "p7_verdict": "TRADE",
+      "exit_date": "2026-05-17",
+      "exit_price": 159.4,
+      "days_held": 3,
+      "pnl_pct": -8.396,
+      "win": false,
+      "exit_reason": "STOP_LOSS"
+    }
+  ]
 }
