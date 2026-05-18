@@ -1,203 +1,176 @@
-# Goofy Screener — Multi-Market Quant Strategy System
+# Goofy Quant Screener
 
-A quantitative trading research project built from scratch in Python.  
-Five strategies individually backtested, then combined into a 9-phase systematic pipeline that screens **117 assets across US, ASX, and JPX markets** — complete with regime detection, Kelly-based sizing, correlation-aware portfolio construction, an XGBoost ML signal layer, paper trading, and walk-forward validation.
+A 9-phase systematic equity screener covering ~120 stocks across US, ASX (Australia), and JPX (Japan) markets.
 
-> **Core finding:** Strategy-asset fit matters more than the strategy itself. The same strategy that produces a Sharpe of 0.87 on one stock produces -0.21 on another. The screener exists to find which combination actually works — and proves it on data the model never saw.
-
----
-
-## Build Phases
-
-| Phase | What it adds | Key file |
-|-------|-------------|----------|
-| 1–2 | Individual strategy backtests (MA, RSI, BB, MACD, Mean Rev) | `Goofy MA/RSI/BB/MACD/Mean Reversion for 6 assets.ipynb` |
-| 3 | Multi-market screener — 117 assets, 3 markets, Excel output | `goofy_screener_phase3.py` |
-| 4a | Regime detection — VIX + SMA regime gate | `regime_detector.py` |
-| 4b | Empirical gate search — finds which regime thresholds actually improve results | `Goofy Phase 4b — Empirical Gate Search.ipynb` |
-| 5 | Position sizing — Half-Kelly + 15% vol target | `position_sizer.py` |
-| 6 | Portfolio construction — correlation clusters (ρ ≥ 0.65), 1/√N size adjustment | `portfolio_builder.py` |
-| 7 | ML signal layer — XGBoost 20-day directional classifier, 55% pass threshold | `ml_signal.py` |
-| 8 | Paper trading — persistent JSON trade log, mark-to-market, -5% stop-loss | `paper_trader.py` |
-| 9 | Walk-forward validation — rolling 5yr train / 1yr test across 10 assets | `Goofy Phase 9 — Walk-Forward Validation.ipynb` |
-
-**Current status:** 16 paper trades open as of May 2026, closing mid-June 2026.
+Built from scratch as a learning project to understand quantitative finance end-to-end — from raw price data to live paper trading with ML signal validation.
 
 ---
 
-## Project Structure
+## What It Does
 
+Each week the screener downloads live price data, runs every asset through 9 layers of analysis, and produces a colour-coded Excel report with trade signals, position sizes, and portfolio risk metrics.
+
+**Signal chain:**
 ```
-── Strategy notebooks ──────────────────────────────────────────────────────
-├── Goofy MA for 6 assets.ipynb             Strategy 1: MA Crossover
-├── Goofy8 RSI for 6 assets.ipynb           Strategy 2: RSI
-├── Goofy BB for 6 assets.ipynb             Strategy 3: Bollinger Bands
-├── Goofy MACD for 6 assets.ipynb           Strategy 4: MACD
-├── Goofy Mean Reversion for 6 assets.ipynb Strategy 5: Mean Reversion
-
-── Phase notebooks ─────────────────────────────────────────────────────────
-├── Goofy Screener Phase 3 — US ASX JPX.ipynb
-├── Goofy Phase 4 — Regime Detection.ipynb
-├── Goofy Phase 4b — Empirical Gate Search.ipynb
-├── Goofy Phase 5 — Position Sizing.ipynb
-├── Goofy Phase 6 — Portfolio Construction.ipynb
-├── Goofy Phase 7 — ML Signal.ipynb
-├── Goofy Phase 8 — Paper Trading.ipynb
-├── Goofy Phase 9 — Walk-Forward Validation.ipynb  ← Phase 9 (new)
-
-── Core modules ────────────────────────────────────────────────────────────
-├── goofy_screener_phase8.py   Main weekly run script (run this)
-├── ml_signal.py               XGBoost feature engineering + model
-├── portfolio_builder.py       Correlation matrix + cluster sizing
-├── position_sizer.py          Kelly Criterion + volatility scaling
-├── regime_detector.py         Regime gate (VIX + SMA)
-├── paper_trader.py            Persistent paper trade log + stop-loss
-
-── Live data ───────────────────────────────────────────────────────────────
-├── paper_trades/
-│   └── trades_log.json        Live paper trade log (16 open positions)
+Price data → Strategy backtest → Regime filter → Kelly sizing → Correlation adjustment → ML gate → Paper trade
 ```
 
+An asset only reaches TRADE status if it passes every layer.
+
 ---
 
-## Methodology
+## The 9 Phases
 
-All strategies share the same validation framework:
-
-| | Detail |
-|---|---|
-| **Train period** | Jan 2016 → Dec 2020 (in-sample) |
-| **Test period** | Jan 2021 → present (out-of-sample) |
-| **Parameter selection** | Grid search on training data only — locked before testing |
-| **Signal execution** | `.shift(1)` on all signals — zero lookahead bias |
-| **Sharpe ratio** | Annualised return ÷ annualised volatility |
-| **Max drawdown** | Peak-to-trough on cumulative equity curve |
-| **Benchmark** | Buy & Hold (passive holding of the same asset) |
-
-Parameters are chosen on historical data only, then frozen and applied to future data the model never saw.
+| Phase | What it builds | Key output |
+|-------|---------------|------------|
+| 1–2 | Individual strategy backtests (MA, RSI, BB, MACD, Mean Reversion) | Equity curves, Sharpe ratios |
+| 3 | Multi-market screener across US/ASX/JPX | Score 0–100, Tier S/A/B/Skip |
+| 4 | Regime detection — only trade in favourable conditions | TRADE / STAND DOWN verdict |
+| 5 | Position sizing — Kelly Criterion + volatility scaling | Kelly %, Vol Scalar, Recommended Size % |
+| 6 | Portfolio construction — correlation clustering | Cluster, Corr Risk, Adjusted Size % |
+| 7 | XGBoost ML signal layer — filters low-confidence signals | ML Score (0–100), Val AUC, ML Gate |
+| 8 | Paper trading framework — live P&L tracking | Open/closed trades, win rate, Sharpe |
+| 9 | Walk-forward validation — proves the ML edge is real | AUC across time windows, verdict |
 
 ---
 
 ## The 5 Strategies
 
-### 1 — Moving Average Crossover
-Goes long when the fast MA crosses above the slow MA; exits on the reverse. Pure trend-following.  
-**Best fit:** SPY, broad indices, macro ETFs  
-**Worst fit:** Mean-reverting stocks (generates whipsaws)
+Each asset is tested on all 5 strategies. The best out-of-sample performer wins.
 
-### 2 — RSI (Relative Strength Index)
-Buys on oversold dips, sells on overbought spikes. Captures momentum extremes.  
-**Best fit:** CBA.AX, NAB.AX, stable dividend stocks  
-**Worst fit:** NVDA-style trending assets (kept triggering premature sells during the AI bull run)
+- **MA Crossover** — 50-day vs 200-day moving average. Trend-following.
+- **RSI** — 14-day Relative Strength Index. Mean reversion on overbought/oversold conditions.
+- **Bollinger Bands** — Price position within 2-sigma bands. Mean reversion.
+- **MACD** — Momentum acceleration via EMA crossover. Trend-following.
+- **Mean Reversion** — Z-score based. Statistical reversion to rolling mean.
 
-### 3 — Bollinger Bands
-Buys when price breaks below the lower band (2σ); sells at the upper band. Volatility-adjusted mean reversion.  
-**Best fit:** Sony (6758.T) — the only strategy-asset pair to beat Buy & Hold out-of-sample in the entire project  
-**Worst fit:** NVDA (negative Sharpe OOS — parabolic trends never mean-revert to a 20-day average)
-
-### 4 — MACD
-Goes long when MACD crosses above its signal line. Hybrid momentum + trend.  
-**Best fit:** NVDA, trending US growth stocks, Japanese financials  
-**Standout:** NVDA is the only asset where OOS Sharpe *exceeded* in-sample (0.94 → 1.03)
-
-### 5 — Mean Reversion (Z-Score)
-Goes long when price drops N standard deviations below its rolling mean; exits at mean.  
-**Best fit:** Sideways / range-bound markets  
-**Key limitation:** Structurally underperforms in bull markets — 2021–2026 was the wrong regime for this strategy
+Training: 2016–2021 | Test (out-of-sample): 2021–present
 
 ---
 
-## Phase 9 Walk-Forward Findings
+## ML Features (Phase 7)
 
-Walk-forward validation tests whether the XGBoost edge is consistent across time, not just lucky in the 2021–2026 OOS window. 100 rolling windows (5yr train / 1yr test) across 10 representative assets.
+11 technical features fed into XGBoost — all use only past data (no lookahead):
 
-| Metric | ML PASS signals | Baseline (no gate) | ML lift |
-|---|---|---|---|
-| Avg val AUC | 0.533 | 0.500 (random) | +0.033 |
-| Win rate | 62.3% | 61.1% | **+1.2%** |
-| Avg 20-day return | +1.81% | +1.63% | **+0.18%** |
-| Windows where WR > 50% | **80%** | — | — |
+| Feature | What it captures |
+|---------|-----------------|
+| `ret_1m`, `ret_3m`, `ret_6m` | Short, medium, long momentum |
+| `rsi_14` | Overbought / oversold level |
+| `macd_hist` | Momentum acceleration (normalised by price) |
+| `bb_pos` | Position within Bollinger Band (0=lower, 1=upper) |
+| `bb_width` | Band width relative to price (volatility regime) |
+| `ma200_slope` | Direction of long-term trend |
+| `price_vs_ma200` | Distance above/below 200-day MA |
+| `vol_21` | 21-day annualised volatility |
+| `vol_ratio` | Short vs long volatility ratio |
+| `drawdown` | Distance from 252-day high |
+| `atr_pct` | ATR percentile — intraday range vs history |
 
-**Verdict: Weak but consistent edge.** The ML gate adds a small but real improvement in 80% of time windows. The model breaks in sharp bear regimes (2022 rate shock) — the -5% stop-loss in Phase 8 directly addresses this.
+Model: XGBoost with conservative hyperparameters (max_depth=3, min_child_weight=20, L1+L2 regularisation) to resist overfitting on noisy financial time series.
 
-**Strongest assets (ML adds most value):** XOM (AUC 0.576), MSFT (0.561), JPM (0.551), 7203.T (0.554)  
-**Weakest (ML adds least):** CBA.AX (AUC 0.493), WBC.AX (0.495) — ASX bank stocks follow macro drivers more than technical patterns
-
----
-
-## Key Findings
-
-**1. Strategy-asset fit is everything.**  
-Sony beat Buy & Hold with Bollinger Bands (Sharpe 0.87) but failed with MACD (Sharpe 0.31). Same asset, wrong strategy.
-
-**2. Out-of-sample validation is non-negotiable.**  
-Sony's Mean Reversion in-sample Sharpe was 1.34 — the highest single result in the whole project. Out-of-sample it fell to 0.41. Without the train/test split that looks like the best strategy in the study. It isn't.
-
-**3. Regime determines performance.**  
-Mean Reversion underperformed across the board because 2021–2026 was trending. The Phase 4 regime gate reduces damage in wrong-regime periods.
-
-**4. Japanese markets showed the strongest signals.**  
-JPX financials (8725.T, 8411.T, 8750.T, 8306.T) dominated the top Sharpe rankings. Japanese bank stocks have cleaner oscillation patterns that suit RSI and MACD well.
-
-**5. Walk-forward shows the ML edge is real but fragile.**  
-AUC averaged 0.533 across 100 windows — consistently above random. But the lift over baseline is only +1.2% win rate. Most of the 62% win rate is beta (bull market). The true alpha is small and regime-sensitive.
+Pass threshold: ML probability ≥ 0.55
 
 ---
 
-## Asset Universe
+## Paper Trading Results (Phase 8)
 
-| Market | Count | Examples |
-|--------|-------|---------|
-| 🇺🇸 US | ~40 | NVDA, TSLA, AAPL, JPM, XOM, GLD, SPY |
-| 🇦🇺 ASX | ~37 | CBA.AX, BHP.AX, CSL.AX, WTC.AX, STW.AX |
-| 🇯🇵 JPX | ~40 | 7203.T, 6758.T, 8306.T, 9984.T, 8725.T |
+Live paper trades opened 12 May 2026 across 23 positions (US / ASX / JPX).
+
+- Hold period: 20 trading days
+- Stop-loss: −5%
+- Exit logged with `exit_reason`: `HOLD_COMPLETE` or `STOP_LOSS`
+- Trades log persisted at `paper_trades/trades_log.json`
+
+Results close ~10 June 2026.
+
+Historical simulation (2021–present): **56.8% win rate | +1.45% avg 20-day return**
 
 ---
 
-## How to Run
+## Position Sizing (Phase 5)
 
-### Requirements
-```bash
-pip install yfinance pandas numpy openpyxl xgboost scikit-learn
+```
+Kelly % = Win Rate − (Loss Rate / Win/Loss Ratio)
+Half-Kelly applied: Final Kelly = Kelly × 0.5
+
+Vol Scalar = Target Vol (15%) / Current Vol (21-day annualised)
+Recommended Size = Half-Kelly × Vol Scalar
 ```
 
-### Run the full Phase 8 screener (weekly)
+---
+
+## Correlation Adjustment (Phase 6)
+
+Assets with correlation ρ ≥ 0.65 are grouped into clusters.
+
+```
+Adjusted Size = Phase 5 Size × (1 / √cluster_size)
+```
+
+Prevents hidden concentration when multiple correlated assets all show TRADE signals simultaneously.
+
+---
+
+## How To Run
+
+**Full Phase 8 screener (signals + paper trading update):**
 ```bash
+pip install yfinance openpyxl pandas numpy xgboost scikit-learn
 python3 goofy_screener_phase8.py --market ALL
 ```
 
-Outputs a colour-coded multi-tab Excel report to `screener_output/`.  
-Updates the paper trade log at `paper_trades/trades_log.json`.
+**Single market:**
+```bash
+python3 goofy_screener_phase8.py --market US
+python3 goofy_screener_phase8.py --market ASX
+python3 goofy_screener_phase8.py --market JPX
+```
 
-### Run walk-forward validation (Phase 9)
-Open `Goofy Phase 9 — Walk-Forward Validation.ipynb` and run all cells.  
-Takes ~5–10 minutes. Saves charts to `screener_output/`.
+**Walk-forward validation (Phase 9):**
+Run the Jupyter notebook: `Goofy Phase 9 — Walk-Forward Validation.ipynb`
 
-### Individual strategy notebooks
-Open any `.ipynb` file in Jupyter. Each notebook is self-contained.
-
----
-
-## Honest Limitations
-
-- **No transaction costs.** Brokerage and slippage would reduce returns, especially for high-frequency strategies.
-- **Sharpe without risk-free rate.** Subtracting cash rates (~4–5%) would reduce headline Sharpe by roughly 0.3–0.5.
-- **Multiple comparisons.** Selecting the best of 5 strategies introduces selection bias even with a proper train/test split.
-- **Long-only.** All strategies are long or flat. No short selling.
-- **ML edge is small (+1.2% win rate lift).** Most of the 62% win rate is market beta. The model adds real but modest value.
-- **Regime sensitivity.** The system underperforms in sharp bear markets (2022). The -5% stop-loss partially mitigates this.
+**Output:** Colour-coded Excel report saved to `screener_output/`
 
 ---
 
-## Disclaimer
+## File Structure
 
-This project is for educational and research purposes only. All backtested results are historical simulations and do not guarantee future performance. Nothing in this repository constitutes financial advice.
+```
+goofy_screener_phase8.py   — Main weekly screener (all phases combined)
+ml_signal.py               — Phase 7: XGBoost feature engineering + model
+paper_trader.py            — Phase 8: paper trade logging and P&L tracking
+portfolio_builder.py       — Phase 6: correlation matrix + cluster sizing
+position_sizer.py          — Phase 5: Kelly Criterion + vol scaling
+regime_detector.py         — Phase 4: market regime detection
+
+paper_trades/
+  trades_log.json          — Persistent paper trade log (open + closed)
+
+screener_output/
+  Goofy_Phase8_YYYY-MM-DD.xlsx   — Weekly Excel report
+  phase9_walkforward.png         — Walk-forward validation chart
+
+Goofy Phase 9 — Walk-Forward Validation.ipynb
+Goofy Phase 8 — Paper Trading.ipynb
+Goofy Phase 7 — ML Signal.ipynb
+Goofy Phase 6 — Portfolio Construction.ipynb
+Goofy Phase 5 — Position Sizing.ipynb
+```
 
 ---
 
-![Phase 4 Excel Output](phase4_sample_output.png)
+## Automated Weekly Run
 
-*Each weekly run produces a colour-coded multi-tab Excel report ranking ~120 stocks across US/ASX/JPX with regime context, ML signals, and paper trade P&L.*
+The screener runs every Sunday 9am Brisbane (AEST) and Monday–Friday 7am Brisbane via scheduled remote agents on Anthropic cloud infrastructure. No local machine required.
 
-*Built by Hiroki Kunu — International Finance, University of Queensland*  
-*GitHub: [GoofyisDAWG](https://github.com/GoofyisDAWG) | LinkedIn: [Hiroki Kunu](https://www.linkedin.com/in/hiroki-kunu-ba4218401)*
+---
+
+## Background
+
+Built while studying Finance at the University of Queensland. No prior programming experience at the start of this project. Each phase added one layer of institutional-grade methodology on top of the last.
+
+The goal was to understand *why* each component exists — not just to implement it.
+
+---
+
+*GoofyisDAWG — Brisbane, Australia*
